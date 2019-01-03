@@ -9,19 +9,24 @@
 
   returns the file descriptor for the upstream pipe.
   =========================*/
-int server_handshake(int*to_client){
-	char pied[HANDSHAKE_BUFFER_SIZE],i=0,sied[HANDSHAKE_BUFFER_SIZE],ackchck[HANDSHAKE_BUFFER_SIZE];
+void server_handshake_1(int*to_client){
+	char pied[HANDSHAKE_BUFFER_SIZE];
+	int wkp;
+	read(wkp=open(WKP,O_RDONLY),pied,HANDSHAKE_BUFFER_SIZE);
+	close(wkp);
+	*to_client=open(pied,O_WRONLY);
+}
+
+int server_handshake_2(int to_client){
+	char i=0,sied[HANDSHAKE_BUFFER_SIZE],ackchck[HANDSHAKE_BUFFER_SIZE];
+	int uppity;
 	for(int p=getpid();i<HANDSHAKE_BUFFER_SIZE&&p;sied[i++]=p%10+'0',p/=10);
 	for(;i<HANDSHAKE_BUFFER_SIZE;sied[i++]=0);
 	if(mkfifo(sied,0644)){
 		printf("server makeification unsuccesful, please try attending the computer interaction club\n%s\n",strerror(errno));
 		return 0;
 	}
-	int wkp,uppity;
-	read(wkp=open(WKP,O_RDONLY),pied,HANDSHAKE_BUFFER_SIZE);
-	close(wkp);
-	*to_client=open(pied,O_WRONLY);
-	write(*to_client,sied,HANDSHAKE_BUFFER_SIZE);
+	write(to_client,sied,HANDSHAKE_BUFFER_SIZE);
 	read(uppity=open(sied,O_RDONLY),ackchck,HANDSHAKE_BUFFER_SIZE);
 	remove(sied);
 	if(strcmp(ACK,ackchck)){

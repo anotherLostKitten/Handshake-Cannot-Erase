@@ -30,8 +30,12 @@ int main(){
 		printf("server makeification unsuccesful, please try deleting system32\n%s\n",strerror(errno));
 		return 0;
 	}
-	srand(time(0));
-	int to_client,from_client=server_handshake(&to_client);
+ st:srand(time(0));
+	int to_client;
+	server_handshake_1(&to_client);
+	if(fork())
+		goto st;
+	int from_client=server_handshake_2(to_client);
 	//	printf("sever:%d,%d\n",to_client,from_client);
 	char*nwli,inp[128];
 	while(1){
